@@ -1,42 +1,23 @@
-import React, { useState } from "react";
-import Button from "./Button";
+import React, { useCallback, useMemo, useState } from "react";
 import { useTodoContext } from "../context/TodoContext";
+import TodoCard from "./TodoCard";
 
 const TodoContainer = () => {
-  const { todos, setIsComplete } = useTodoContext();
-
+  const { todos, setTodos } = useTodoContext();
+  const deleteTodo = useCallback(
+    (todoName) => {
+      const filteredTodos = todos.filter(
+        (curTodo) => curTodo.todoName !== todoName
+      );
+      setTodos(filteredTodos);
+    },
+    [todos, setTodos]
+  );
   return (
     <div>
-      <div className="grid grid-cols-3 gap-3 pt-10">
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 pt-10">
         {todos.map((curTodo, index) => (
-          <div
-            className="bg-[#F7DCB9] p-6 rounded-xl opacity-100 transition-all"
-            key={index}
-          >
-            <h2 className="text-center font-semibold text-3xl mb-5">
-              {curTodo.todoName}
-            </h2>
-            <div className="text-lg font-medium tracking-wider mb-3">
-              <span className="font-bold">Date:</span> {curTodo.date}
-            </div>
-            <div className="text-lg font-medium tracking-wider mb-3">
-              <span className="font-bold">Time:</span> {curTodo.time}
-            </div>
-            <div className="text-lg font-medium tracking-wider mb-6">
-              <span className="font-bold">Status:</span> {curTodo.status}
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                className="bg-purple-700 hover:bg-purple-800 px-5 text-white"
-                onClick={() => setIsComplete(true)}
-              >
-                Complete
-              </Button>
-              <Button className="bg-red-700 hover:bg-red-800 px-5 text-white">
-                Delete
-              </Button>
-            </div>
-          </div>
+          <TodoCard todo={curTodo} key={index} deleteTodo={deleteTodo} />
         ))}
       </div>
       {todos.length === 0 && (
